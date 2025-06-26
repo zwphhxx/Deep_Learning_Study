@@ -42,7 +42,7 @@ linear_tensor_linspace = torch.linspace(13,22,3) # Evenly split
 print(f"linear_tensor_linspace->\n{linear_tensor_linspace}\n")
 
 # Create a random tensor.
-randn_tensor = torch.randn(2,4)
+randn_tensor = torch.randn(2, 4)
 print(f"randn_tensor->\n{randn_tensor}")
 seed = torch.random.initial_seed()
 print(f"torch random seed->\n{seed}") # 15646168311400
