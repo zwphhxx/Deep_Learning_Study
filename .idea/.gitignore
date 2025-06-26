@@ -6,3 +6,59 @@
 # Datasource local storage ignored files
 /dataSources/
 /dataSources.local.xml
+
+# Python
+__pycache__/
+*.py[cod]
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+*.pyd
+*.pyo
+.Python
+.env
+.venv
+venv/
+ENV/
+env/
+
+# Jupyter notebooks
+.ipynb_checkpoints/
+
+# IDE
+.idea/
+
+# Temp files
+.DS_Store
+Thumbs.db
+
+# data
+datasets/
+data/
+*.zip
+*.tar.gz
+
+# model
+*.pt
+*.pth
+*.ckpt
+*.log
+logs/
+runs/
+
+# Enviroment
+*.env
+*.yaml
+*.yml
+
+# Jupyter
+*.html
+*.pdf
+
+# Temporary files
+*.tmp
+*.bak
+*.swp
+*.out
