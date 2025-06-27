@@ -1,19 +1,28 @@
 import numpy as np
 import matplotlib.pyplot as plt
-from sklearn.datasets import make_regression  # make linear regression datasets
+from sklearn.datasets import make_regression  # For generating synthetic regression datasets
 import torch
-from torch import optim  # optimizer
-from torch.utils.data import DataLoader
-from torch.utils.data import TensorDataset
+from torch import optim  # For optimization algorithms (e.g., SGD)
+from torch.utils.data import DataLoader # For batching and shuffling data
+from torch.utils.data import TensorDataset # For creating PyTorch datasets from tensors
 
 
 def create_regression_datasets():
+    """
+      Generates a synthetic linear regression dataset using scikit-learn.
+      :returns:
+        x: Feature data (independent variable) as PyTorch tensor
+        y: Target values (dependent variable) as PyTorch tensor
+        coef: True slope coefficient of the underlying linear relationship
+    """
+    # Generate synthetic regression data with known parameters
     x, y, coef = make_regression(n_samples=300,
                                  n_features=1,
                                  noise=15,
                                  coef=True,
                                  bias=1.5,
                                  random_state=42)
+    # Convert numpy arrays to PyTorch tensors
     x = torch.tensor(x)
     y = torch.tensor(y)
     print(f"x.shape:{x.shape}, y.shape:{y.shape}")
@@ -21,48 +30,73 @@ def create_regression_datasets():
 
 
 def linear_regression_model(x, y, coef):
-    dateset = TensorDataset(x, y)
-    dataLoader = DataLoader(dateset, batch_size=2, shuffle=True)
+    """
+   Trains a linear regression model using PyTorch's torch.nn module.
+    :param x:Feature data (X)
+    :param y:Target values (Y)
+    :param coef:True coefficient
+    :return:
+        epochs: Total number of training iterations
+        loss_epoch: List of average loss per epoch
+        linear_regression_model: Trained PyTorch model
+    """
 
-    # create linear regression model
+    # Create TensorDataset and DataLoader for efficient batching
+    dateset = TensorDataset(x, y)
+
+    dataLoader = DataLoader(dateset,
+                            batch_size=6,   # Mini-batch size
+                            shuffle=True,   # Shuffle data each epoch
+                            drop_last=False # Keep last batch even if smaller
+                            )
+
+    # Define linear regression model (single input, single output)
     linear_regression_model = torch.nn.Linear(in_features=1, out_features=1)
 
-    # MSE function
+    # Mean Squared Error loss function
     criterion = torch.nn.MSELoss()
 
-    # optimizer function -> SGD
+    # Stochastic Gradient Descent optimizer
     optimizer = torch.optim.SGD(linear_regression_model.parameters(), lr=0.01)
 
-    epochs = 100
-    # loss parameters
-    loss_epoch = []
-    total_loss = 0.0
-    train_sample = 0.0
+    # Training configuration
+    epochs = 100        # Number of complete passes through the dataset
+    loss_epoch = []     # Store average loss per epoch
+    total_loss = 0.0    # Accumulate loss within epoch
+    train_sample = 0.0  # Count of samples processed in epoch
+
+    # Training loop
     for _ in range(epochs):
+        # Iterate through data in batches
         for train_x, train_y in dataLoader:
-            # Use model to predict the train data
+
+            # Forward pass: compute predicted y
             y_pred = linear_regression_model(train_x.type(torch.float32))
 
-            # Loss calculation
+            # Compute loss between predictions and true values
+            # Reshape train_y to match prediction shape [batch_size, 1]
             loss = criterion(y_pred, train_y.reshape(-1, 1).type(torch.float32))
+
+            # Accumulate loss and sample count
             total_loss += loss.item()
             train_sample += len(train_x)
 
-            # gradient initialize
+            # Reset gradients to zero before backward pass
             optimizer.zero_grad()
 
             # Automatic Differentiation
             loss.backward()
 
-            # SGD
+            # Backward pass: compute gradients
             optimizer.step()
 
-        # update average loss of each epoch
+        # Calculate average loss for this epoch
         loss_epoch.append(total_loss / train_sample)
     return epochs, loss_epoch, linear_regression_model
 
 
 if __name__ == '__main__':
+    # Create dataset and train model
     x, y, coef = create_regression_datasets()
     epochs, loss_epoch, linear_regression_model = linear_regression_model(x, y, coef)
 
