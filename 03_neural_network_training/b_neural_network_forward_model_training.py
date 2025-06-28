@@ -57,4 +57,5 @@ if __name__ == '__main__':
     # Print all parameter
     print(f"{'-' * 30}Layer Parameters{'-' * 30}")
     for name, param in neural_network_model.named_parameters():
-        print(f"{name} : {param}\n")
+        print(f"{'-' * 30}{name}{'-' * 30}")
+        print(f"{param}\n")
